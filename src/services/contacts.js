@@ -1,4 +1,7 @@
 import { ContactsCollection } from '../db/models/contacts.js';
+import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
+
 
 export const getAllContacts = async () => {
   const contacts = await ContactsCollection.find();
@@ -6,12 +9,22 @@ export const getAllContacts = async () => {
 };
 
 export const getContactById = async (contactId) => {
- try{
-  const contacts = await ContactsCollection.findOne({   _id: contactId });
-  return contacts;
- }catch(err){
-  return false
- }
+    try{
+      const contact = await ContactsCollection.findById(contactId); 
+      //Далі для мене поки не зрозуміле явище: якщо айді не існує - приходить у відовідь не null.
+      // Відповідь не може обробити жоден із if, що нижче. Без catch перемогти помилку 500 не вдається.
+      //  Буду рада допомозі, не одну годину витратила на те, аби вирішити проблему
+        if (!contact) {
+        throw createHttpError(404, 'Contact not found!');
+        }
+        if (!mongoose.Types.ObjectId.isValid(contactId)) {
+        throw createHttpError(400, 'Invalid contact ID format');
+        }
+    return contact;
+    }
+    catch(err) {
+      console.log(err);
+    };
 };
 
 export const createContact = async (payload) => {
