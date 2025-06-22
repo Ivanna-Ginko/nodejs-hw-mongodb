@@ -1,19 +1,55 @@
 import { ContactsCollection } from '../db/models/contacts.js';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
+import { SORT_ORDER } from '../constants/index.js';
 
 
-export const getAllContacts = async () => {
-  const contacts = await ContactsCollection.find();
-  return contacts;
+export const getAllContacts = async ({ 
+  page = 1,
+  perPage = 10,
+  sortOrder = SORT_ORDER.ASC,
+  sortBy = '_id', 
+  filter = {}
+}) => {
+
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
+ 
+
+  const contactsQuery = ContactsCollection.find();
+
+   if (filter.contactType) {
+    contactsQuery.where('contactType').equals(filter.contactType);
+  }   
+  if (filter.isFavourite !== undefined) {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
+  }
+ const [contactsCount, contacts] = await Promise.all([
+
+  ContactsCollection.find().merge(contactsQuery).countDocuments(),
+    contactsQuery
+      .skip(skip)
+      .limit(limit)
+      .sort({ [sortBy]: sortOrder })
+      .exec(),
+  ]);
+
+
+
+  const paginationData = calculatePaginationData(contactsCount, perPage, page);
+
+   
+  return {
+    data: contacts,
+    ...paginationData,
+  };
 };
 
 export const getContactById = async (contactId) => {
     try{
       const contact = await ContactsCollection.findById(contactId); 
-      //Далі для мене поки не зрозуміле явище: якщо айді не існує - приходить у відовідь не null.
-      // Відповідь не може обробити жоден із if, що нижче. Без catch перемогти помилку 500 не вдається.
-      //  Буду рада допомозі, не одну годину витратила на те, аби вирішити проблему
+      
         if (!contact) {
         throw createHttpError(404, 'Contact not found!');
         }
@@ -57,3 +93,5 @@ export const updateContact = async (contactId, payload, options = {}) => {
     isNew: Boolean(rawResult?.lastErrorObject?.upserted),
   };
 };
+
+
