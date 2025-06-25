@@ -5,6 +5,8 @@ import { getEnvVar } from './utils/getEnvVar.js';
 import contactsRouter from "./routers/contacts.js";
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import { requestIdMiddleware } from './middlewares/requestId.js';
+
 
 const PORT = Number(getEnvVar('PORT', '3000'));
 
@@ -15,7 +17,7 @@ export const startServer = () => {
 	  type: ['application/json', 'application/vnd.api+json'],
     limit: '100kb',
   }));
-  app.use(cors());
+  app.use(cors(), pino(), requestIdMiddleware);
 
   app.use(
     pino({

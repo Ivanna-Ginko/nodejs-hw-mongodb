@@ -1,6 +1,5 @@
 import { ContactsCollection } from '../db/models/contacts.js';
 import createHttpError from 'http-errors';
-import mongoose from 'mongoose';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import { SORT_ORDER } from '../constants/index.js';
 
@@ -34,11 +33,7 @@ export const getAllContacts = async ({
       .sort({ [sortBy]: sortOrder })
       .exec(),
   ]);
-
-
-
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
-
    
   return {
     data: contacts,
@@ -47,21 +42,16 @@ export const getAllContacts = async ({
 };
 
 export const getContactById = async (contactId) => {
-    try{
-      const contact = await ContactsCollection.findById(contactId); 
-      
-        if (!contact) {
+    
+    const contact = await ContactsCollection.findById(contactId); 
+    
+        if (!contact) 
         throw createHttpError(404, 'Contact not found!');
-        }
-        if (!mongoose.Types.ObjectId.isValid(contactId)) {
-        throw createHttpError(400, 'Invalid contact ID format');
-        }
+        
     return contact;
-    }
-    catch(err) {
-      console.log(err);
-    };
 };
+
+    
 
 export const createContact = async (payload) => {
   const contact = await ContactsCollection.create(payload);

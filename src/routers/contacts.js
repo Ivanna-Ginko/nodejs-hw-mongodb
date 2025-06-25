@@ -13,14 +13,14 @@ const contactsRouter = Router();
 
 contactsRouter.get('/contacts', ctrlWrapper(getContactsController));
 
-contactsRouter.get('/contacts/:contactId', ctrlWrapper(getContactByIdController), isValidId);
+contactsRouter.get('/contacts/:contactId', isValidId, ctrlWrapper(getContactByIdController), );
 
 contactsRouter.post('/contacts', ctrlWrapper(createContactController), validateBody(createContactSchema),);
 
-contactsRouter.delete('/contacts/:contactId', ctrlWrapper(deleteContactController), isValidId);
+contactsRouter.delete('/contacts/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
-contactsRouter.put('/contacts/:contactId', ctrlWrapper(upsertContactController), isValidId);
+contactsRouter.put('/contacts/:contactId', ctrlWrapper(upsertContactController), isValidId, validateBody(updateContactSchema));
 
-contactsRouter.patch('/contacts/:contactId', ctrlWrapper(patchContactController), validateBody(updateContactSchema), isValidId);
+contactsRouter.patch('/contacts/:contactId',  isValidId, validateBody(updateContactSchema), ctrlWrapper(patchContactController));
 
 export default contactsRouter;
