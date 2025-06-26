@@ -15,11 +15,11 @@ contactsRouter.get('/contacts', ctrlWrapper(getContactsController));
 
 contactsRouter.get('/contacts/:contactId', isValidId, ctrlWrapper(getContactByIdController), );
 
-contactsRouter.post('/contacts', ctrlWrapper(createContactController), validateBody(createContactSchema),);
+contactsRouter.post('/contacts',  validateBody(createContactSchema), ctrlWrapper(createContactController),);
 
 contactsRouter.delete('/contacts/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
-contactsRouter.put('/contacts/:contactId', ctrlWrapper(upsertContactController), isValidId, validateBody(updateContactSchema));
+contactsRouter.put('/contacts/:contactId', isValidId, validateBody(updateContactSchema), ctrlWrapper(upsertContactController));
 
 contactsRouter.patch('/contacts/:contactId',  isValidId, validateBody(updateContactSchema), ctrlWrapper(patchContactController));
 
