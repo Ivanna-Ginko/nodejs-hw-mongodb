@@ -7,9 +7,11 @@ import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 
 export const getContactsController = async (req, res, next,) => {
+
       const { page, perPage } = parsePaginationParams(req.query);
         const { sortBy, sortOrder } = parseSortParams(req.query);
         const filter = parseFilterParams(req.query);
+        filter.userId=req.user._id;
 	  const contacts = await getAllContacts({
     page,
     perPage,
@@ -41,11 +43,11 @@ export const getContactsController = async (req, res, next,) => {
 
 
 export const createContactController = async (req, res) => {
-    const contact = await createContact(req.body);
+    const contact = await createContact({ ...req.body, userId: req.user._id });
     res.status(201).json({
         status: 201,
         message: `Successfully created a contact!`,
-        data: contact,
+        data: contact
     });
 };
 
@@ -58,7 +60,6 @@ export const deleteContactController = async (req, res, next) => {
     }
 
     res.status(204).send();
-    //console.log("====================================delete=")
     //res.json({
         //status: 204,
         //message: `Contact deletet!`,

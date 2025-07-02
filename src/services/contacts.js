@@ -11,10 +11,9 @@ export const getAllContacts = async ({
   sortBy = '_id', 
   filter = {}
 }) => {
-
+  
   const limit = perPage;
   const skip = (page - 1) * perPage;
- 
 
   const contactsQuery = ContactsCollection.find();
 
@@ -24,6 +23,9 @@ export const getAllContacts = async ({
   if (filter.isFavourite !== undefined) {
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
+   if (filter.userId) {
+    contactsQuery.where('userId').equals(filter.userId);
+  }  
  const [contactsCount, contacts] = await Promise.all([
 
   ContactsCollection.find().merge(contactsQuery).countDocuments(),
@@ -44,7 +46,7 @@ export const getAllContacts = async ({
 export const getContactById = async (contactId) => {
     
     const contact = await ContactsCollection.findById(contactId); 
-    
+
         if (!contact) 
         throw createHttpError(404, 'Contact not found!');
         
