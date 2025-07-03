@@ -43,13 +43,16 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (contactId) => {
+export const getContactById = async (contactId, parentId) => {
     
-    const contact = await ContactsCollection.findById(contactId); 
+    const contact = await ContactsCollection.findOne({ _id: contactId, userId: parentId  }); 
 
         if (!contact) 
         throw createHttpError(404, 'Contact not found!');
-        
+
+        //if (!contact.userId.equals(parentId)) 
+        // throw createHttpError(404, 'This contact created not by you!');
+
     return contact;
 };
 
@@ -60,16 +63,16 @@ export const createContact = async (payload) => {
   return contact;
 };
 
-export const deleteContact = async (contactId) => {
-  const contact = await ContactsCollection.findOneAndDelete({
-    _id: contactId,
-  });
+export const deleteContact = async (contactId, parentId) => {
+  const contact = await ContactsCollection.findOneAndDelete({ _id: contactId, userId: parentId });
   return contact;
 };
 
-export const updateContact = async (contactId, payload, options = {}) => {
+export const updateContact = async (contactId, parentId, payload, options = {}) => {
   const rawResult = await ContactsCollection.findOneAndUpdate(
-    { _id: contactId },
+    { _id: contactId,
+      userId: parentId
+     },
     payload,
     {
       new: true,
