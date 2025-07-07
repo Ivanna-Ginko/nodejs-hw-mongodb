@@ -7,6 +7,7 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { requestIdMiddleware } from './middlewares/requestId.js';
 import router from './routers/index.js';
 import cookieParser from 'cookie-parser';
+import { UPLOAD_DIR } from './constants/index.js';
 
 
 const PORT = Number(getEnvVar('PORT', '3000'));
@@ -15,9 +16,9 @@ export const startServer = () => {
   const app = express();
 
   app.use(express.json({
-	  type: ['application/json', 'application/vnd.api+json'],
-    limit: '100kb',
-  }));
+	 type: ['application/json', 'application/vnd.api+json'],
+   limit: '100kb',
+ }));
   app.use(cors(), pino(), requestIdMiddleware);
 
   app.use(
@@ -27,6 +28,8 @@ export const startServer = () => {
       },
     }),
   );
+
+  app.use('/uploads', express.static(UPLOAD_DIR));
 
   app.use(cookieParser());
 
