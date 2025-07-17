@@ -34,10 +34,6 @@ requestBody:
               description: 'What type of contact it is'
               type: string
               enum: ['work', 'home', 'personal']
-            userId: 
-              description: 'id of the person who created the contact'
-              type: string
-              example: '65e4decdd286b30065d54af9'
             photo: 
               description: "Link to contact's photo"
               type: string
